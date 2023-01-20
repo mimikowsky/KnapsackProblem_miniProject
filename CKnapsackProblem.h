@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 class CKnapsackProblem
 {
@@ -10,7 +11,7 @@ private:
 	int iItemsNumber;
 	std::vector<int> iValuesVector;
 	std::vector<int> iSizeVector;
-
+	bool correctData = true;
 
 public:
 	CKnapsackProblem()
@@ -40,34 +41,33 @@ public:
 		iSizeVector = sizes;
 	}
 
+	CKnapsackProblem(std::string filename)
+	{
+		readFile(filename);
+		/*try
+		{
+			readFile(filename);
+
+			for (int i = 0; i < iValuesVector.size(); i++)
+			{
+				std::cout << iValuesVector[i] << " ";
+				std::cout << iSizeVector[i] << "\n";
+			}
+		}
+		catch (const std::exception& er)
+		{
+			std::cout << "xd";
+			std::cout << er.what();
+		}*/
+		
+	}
+
 	void addItem(int iValue, int iSize)
 	{
-		/*int* newValues = new int[iItemsNumber + 1];
-		int* newSizes = new int[iItemsNumber + 1];
-		
-		for (int i = 0; i < iItemsNumber; i++)
-		{
-			newValues[i] = iValuesVector[i];
-		}
-		newValues[iItemsNumber] = iValue;
-
-		for (int i = 0; i < iItemsNumber; i++)
-		{
-			newSizes[i] = iSizeVector[i];
-		}
-		newSizes[iItemsNumber] = iSize;
-		iItemsNumber++;
-
-		delete iValuesVector;
-		delete iSizeVector;
-		iValuesVector = newValues;
-		iSizeVector = newSizes;*/
-
 		iItemsNumber++;
 		iValuesVector.push_back(iValue);
 		iSizeVector.push_back(iSize);
-
-		}
+	}
 	
 	bool changeItem(int offset, int value, int size)
 	{
@@ -80,91 +80,94 @@ public:
 
 	void readFile(std::string filename)
 	{
-		std::vector<int> values;
-		std::vector<int> sizes;
-		readFileToVectors(filename, values, sizes);
+		readFileToVectors(filename);
+		//iValuesVector.clear();
+		//iSizeVector.clear();
+		
+		//iValuesVector = values;
+		//iSizeVector = sizes;
+		
+
 
 	}
 
-	void readFileToVectors(std::string textFileName, std::vector<int> values, std::vector<int> sizes)
+	void readFileToVectors(std::string textFileName)
 	{
 
 		std::ifstream myfile;
 		myfile.open(textFileName);
-		std::string mystring;
 
-		/*if (myfile.is_open()) {
-			while (myfile.good()) {
-				myfile >> mystring;
-				std::cout << mystring + " ";
-			}
-		}*/
-		std::cout << "---------\n";
-		
 		//std::vector<int> values;
 		//std::vector<int> sizes;
 
-		bool valuesDone = false;
-		bool sizesDone = false;
-
 		if (myfile.is_open()) {
 
-			char mychar;
-			//itemsNumber = myfile.get();
-			//myfile.get();
+			std::string line;
+			std::stringstream ss;
 			int number1, number2;
-
-			while (myfile >> number1 >> number2)
+			while (std::getline(myfile, line))
 			{
-				values.push_back(number1);
-				sizes.push_back(number2);
-			}
-
-			/*while (myfile.good()) {
-				
-				mychar = myfile.get();
-				if (mychar == ' ')
-				{
-					std::cout << "spacja \n";
+				ss.clear();
+				ss.str(line);
+				ss >> number1 >> number2;
+				if (ss.fail()) {
+					std::cout << "Error, invalid input: " << line << std::endl;
+					correctData = false;
 				}
-				else if (!valuesDone)
-				{
-					values.push_back(mychar);
-					valuesDone = true;
+				else {
+					iValuesVector.push_back(number1);
+					iSizeVector.push_back(number2);
 				}
-				else
-				{
-					sizes.push_back(mychar);
-					valuesDone = false;
-
-				}*/
-
-
-				//std::cout << mychar;
-
-			//std::cout << ": " << myfile.tellg() << ", ";
-			//}
-
-			std::cout << "\n";
-
-			for(int i=0; i<values.size(); i++)
-			{
-				std::cout << values[i];
 			}
 
-			std::cout << "\n";
-			for(int i=0; i<sizes.size(); i++)
-			{
-				std::cout << sizes[i];
-			}
 		}
+		else {
+			std::cout << "Error, unable to open the file" << std::endl;
+		}
+
+		//std::ifstream myfile;
+		//myfile.open(textFileName);
+		//std::string mystring;
+
+		//if (myfile.is_open()) {
+
+		//	int number1, number2;
+
+		//	while (myfile >> number1 >> number2)
+		//	{
+		//		//values.push_back(number1);
+		//		//sizes.push_back(number2);
+		//		iValuesVector.push_back(number1);
+		//		iSizeVector.push_back(number2);
+		//	}
+
+		iItemsNumber = iValuesVector.size();
 	}
 
 	void solveProblem()
 	{
-		CGenericAlgorithm algorithm(iItemsNumber, iValuesVector, iSizeVector);
-		algorithm.solve();
-		algorithm.printBestSolution();
+		if (correctData == true)
+		{
+			CGenericAlgorithm algorithm(iItemsNumber, iValuesVector, iSizeVector);
+			algorithm.solve();
+			algorithm.printBestSolution();
+		}
+
+		/*try
+		{
+			CGenericAlgorithm algorithm(iItemsNumber, iValuesVector, iSizeVector);
+			algorithm.solve();
+			algorithm.printBestSolution();
+		}
+		catch (const std::invalid_argument&)
+		{
+			std::cout << "Nieprawidlowe dane wejsciowe";
+		}
+		catch (const std::exception&)
+		{
+			std::cout << "Other Exception";
+		}*/
+		
 	}
 };
 

@@ -14,11 +14,13 @@ public:
 	{
 		iSize = 4;
 		genotype = new int[iSize];
+		iFitness = 0;
 	}
 	CIndividual(int size)
 	{
 		iSize = size;
 		genotype = new int[size];
+		iFitness = 0;
 	}
 	~CIndividual()
 	{
@@ -152,12 +154,18 @@ public:
 		{
 			copyGen[i] = genotype[i];
 		}
+		copy->setQuality(iFitness);
 		return copy;
 	}
 
 	void setQuality(int fitness)
 	{
 		iFitness = fitness;
+	}
+
+	int getQuality()
+	{
+		return iFitness;
 	}
 
 };

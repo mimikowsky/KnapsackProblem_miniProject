@@ -9,7 +9,7 @@
 int main()
 {
     std::cout << "Hello World!\n\n";
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     //int iRandom = rand() % 2;
     //std::cout << iRandom;
    /* CIndividual cInd;
@@ -26,21 +26,6 @@ int main()
     gen.generatePopulation();
     gen.printIndividuals();
     gen.doCrossing();*/
-
-
-   /* int* values = new int[5];
-    values[0] = 3;
-    values[1] = 1;
-    values[2] = 2;
-    values[3] = 4;
-    values[4] = 2;
-
-    int* sizes = new int[5];
-    sizes[0] = 1;
-    sizes[1] = 2;
-    sizes[2] = 3;
-    sizes[3] = 5;
-    sizes[4] = 1;*/
     
     std::vector<int> values;
     values.push_back(3);
@@ -57,9 +42,12 @@ int main()
     sizes.push_back(1);
 
 
-    CKnapsackProblem prob(5, values, sizes);
-    prob.solveProblem();
+    //CKnapsackProblem prob(5, values, sizes);
+    CKnapsackProblem prob("dane.txt");
+    //prob.addItem(3, 2);
+    //prob.solveProblem();
     //prob.readFile("dane.txt");
+    prob.solveProblem();
 
    /* CIndividual indi(5);
     indi.createGenotype();
@@ -69,6 +57,4 @@ int main()
 
 }
 
-// consider situation when solution has the same value as best solution, but lower size, should we change best solution? my if doesnt do it.   probably doesn't need to do it
-// add quality componet do CIndividual class, not to calculate every time quality when you choose parent.
-// consider fitness/quality component as normaln number or 0 if size is too big.
+// sometimes when genotype is long, max_size is quite low. and your generation size is not too big, the best solution can never be set and we print values from null pointer (so random -84213 value f.e.) - take parameters wisely
