@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include "CIndividual.h"
-#define POP_SIZE 20
-#define MAX_SIZE 9
-#define GENERATION_NUMBER 50
+#define POP_SIZE 100
+#define GENERATION_NUMBER 150
+//#define MAX_SIZE 9
 
 
 class CGenericAlgorithm
@@ -15,13 +15,12 @@ private:
 	std::vector<CIndividual*> individualsVector;
 	std::vector<CIndividual*> newPopulationVector;
 	int itemsNumber;
-	int maxSize = MAX_SIZE;
+	int maxSize = 9;
 	std::vector<int> valuesVector;
 	std::vector<int> sizesVector;
 	int* bestSolutionGen;
 	int bestSolutionQuality;
 	int generationNumber = GENERATION_NUMBER;
-
 	
 public:
 
@@ -35,13 +34,30 @@ public:
 		if (valuesVector.size() != sizesVector.size())
 			throw std::invalid_argument("Tables not equal! \n");
 	}
+	
+	CGenericAlgorithm(int itemsNum, std::vector<int> values, std::vector<int> sizes, int capacity)
+	{
+		itemsNumber = itemsNum;
+		valuesVector = values;
+		sizesVector = sizes;
+		bestSolutionGen = new int[itemsNumber];
+		maxSize = capacity;
+
+		if (valuesVector.size() != sizesVector.size())
+			throw std::invalid_argument("Tables not equal! \n");
+	}
 
 	~CGenericAlgorithm()
 	{
-		std::cout << "CGenericAlgorithm destructor \n";
+		//std::cout << "CGenericAlgorithm destructor \n";
 		for (CIndividual* obj : individualsVector)
 			delete obj;
-		individualsVector.clear();
+		individualsVector.clear();	
+		for (CIndividual* obj : newPopulationVector)
+			delete obj;
+		newPopulationVector.clear();	
+		
+		delete bestSolutionGen;
 	}
 
 	void solve()
@@ -50,17 +66,14 @@ public:
 		//printIndividuals(individualsVector);
 
 		int i = 1;
-
 		while (i < generationNumber) 
 		{
-
 			while (newPopulationVector.size() < popSize)
 			{
 				doCrossing();
 			}
 			//std::cout << "New population: \n";
 			//printIndividuals(newPopulationVector);
-
 			//for (CIndividual* parent : individualsVector)
 			//	 std::cout<<parent->getQuality()<<" ";
 			for (CIndividual* parent : individualsVector)
@@ -90,21 +103,6 @@ public:
 			individualsVector.push_back(ind);
 		}
 	}
-
-	//int countFitness(int* genotypeI)
-	//{
-	//	// value or 0 if solution is unacceptable (too big size of items)
-	//	int fitness = 0;
-	//	for (int i = 0; i < itemsNumber; i++)
-	//	{
-	//		if (genotypeI[i] == 1)
-	//		{
-	//			fitness += valuesVector[i];
-	//		}
-	//	}
-	//	return fitness;
-	//	
-	//}
 
 	void doCrossing()
 	{
@@ -146,7 +144,6 @@ public:
 			childs.push_back(parent->copy());
 			childs.push_back(parent2->copy());
 		}
-		
 
 		int* genotypePointer;
 
@@ -157,24 +154,23 @@ public:
 		}
 		else
 		{
-
-			if (childs[0]->getQuality() > 0 && childs[0]->getQuality() > childs[1]->getQuality())
+			if (childs[0]->getFitness() > 0 && childs[0]->getFitness() > childs[1]->getFitness())
 			{
 				genotypePointer = childs[0]->getGenotype();
 				for (int i = 0; i < itemsNumber; i++)
 				{
 					bestSolutionGen[i] = genotypePointer[i];
 				}
-				bestSolutionQuality = childs[0]->getQuality();
+				bestSolutionQuality = childs[0]->getFitness();
 			}
-			else if (childs[1]->getQuality() > 0)
+			else if (childs[1]->getFitness() > 0)
 			{
 				genotypePointer = childs[1]->getGenotype();
 				for (int i = 0; i < itemsNumber; i++)
 				{
 					bestSolutionGen[i] = genotypePointer[i];
 				}
-				bestSolutionQuality = childs[1]->getQuality();
+				bestSolutionQuality = childs[1]->getFitness();
 			}
 		}
 
@@ -209,10 +205,15 @@ public:
 			std::cout << bestSolutionGen[i];;
 		}
 		std::cout << "\n";
-		std::cout << "Value of sulution: "<< bestSolutionQuality << "\n";
-
-		//std::cout << "Value of sulution: "<< bestSolution->count(valuesTable) << "\n";
-		//std::cout << "Size of solution: "<< bestSolution->countSizes(sizesTable) << "\n";
+		std::cout << "Value of solution: "<< bestSolutionQuality << "\n";
+		
+		int size = 0;
+		for (int i = 0; i < sizesVector.size(); i++)
+		{
+			if (bestSolutionGen[i] == 1)
+				size += sizesVector[i];
+		}
+		std::cout << "Size of solution: " << size << " (maximal size = " << maxSize << ")\n";
 	}
 
 	void countFitness(CIndividual* individual)
@@ -231,7 +232,7 @@ public:
 
 		if (size > maxSize)
 		{
-			individual->setQuality(0);
+			individual->setFitness(0);
 		}
 		else
 		{
@@ -242,13 +243,13 @@ public:
 					fitness += valuesVector[i];
 				}
 			}
-			individual->setQuality(fitness);
+			individual->setFitness(fitness);
 		}
 	}
 
 	CIndividual* chooseBetterParent(CIndividual* first, CIndividual* second)
 	{
-		if (first->getQuality() >= second->getQuality())
+		if (first->getFitness() >= second->getFitness())
 		{
 			return first;
 		}
@@ -260,7 +261,7 @@ public:
 
 	void checkIfSolutionBetter(CIndividual* individual)
 	{
-		if (individual->getQuality() > bestSolutionQuality)
+		if (individual->getFitness() > bestSolutionQuality)
 		{
 
 			int* genotypePointer = individual->getGenotype();
@@ -268,7 +269,7 @@ public:
 			{
 				bestSolutionGen[i] = genotypePointer[i];
 			}
-			bestSolutionQuality = individual->getQuality();
+			bestSolutionQuality = individual->getFitness();
 		}
 	}
 };

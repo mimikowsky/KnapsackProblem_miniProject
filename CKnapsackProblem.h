@@ -12,6 +12,7 @@ private:
 	std::vector<int> iValuesVector;
 	std::vector<int> iSizeVector;
 	bool correctData = true;
+	int iCapacity = 9;
 
 public:
 	CKnapsackProblem()
@@ -23,16 +24,7 @@ public:
 	CKnapsackProblem(int iItemsNum)
 	{
 		iItemsNumber = iItemsNum;
-		//iValuesVector = new int[iItemsNumber];
-		//iSizeTable = new int[iItemsNumber];
 	}
-	
-	/*CKnapsackProblem(int itemsNum, int* values, int* sizes)
-	{
-		iItemsNumber = itemsNum;
-		iValuesVector = values;
-		iSizeVector = sizes;
-	}	*/
 	
 	CKnapsackProblem(int itemsNum, std::vector<int> values, std::vector<int> sizes)
 	{
@@ -41,6 +33,19 @@ public:
 		iSizeVector = sizes;
 	}
 
+	CKnapsackProblem(int itemsNum, std::vector<int> values, std::vector<int> sizes, int capacity)
+	{
+		iItemsNumber = itemsNum;
+		iValuesVector = values;
+		iSizeVector = sizes;
+		iCapacity = capacity;
+	}
+
+	CKnapsackProblem(std::string filename, int capacity)
+	{
+		iCapacity = capacity;
+		readFile(filename);
+	}
 	CKnapsackProblem(std::string filename)
 	{
 		readFile(filename);
@@ -80,15 +85,9 @@ public:
 
 	void readFile(std::string filename)
 	{
-		readFileToVectors(filename);
-		//iValuesVector.clear();
-		//iSizeVector.clear();
-		
-		//iValuesVector = values;
-		//iSizeVector = sizes;
-		
-
-
+		iValuesVector.clear();
+		iSizeVector.clear();
+		readFileToVectors(filename);		
 	}
 
 	void readFileToVectors(std::string textFileName)
@@ -96,9 +95,7 @@ public:
 
 		std::ifstream myfile;
 		myfile.open(textFileName);
-
-		//std::vector<int> values;
-		//std::vector<int> sizes;
+	
 
 		if (myfile.is_open()) {
 
@@ -110,6 +107,11 @@ public:
 				ss.clear();
 				ss.str(line);
 				ss >> number1 >> number2;
+				if (number1 <= 0 || number2 <= 0) 
+				{
+					std::cout << "Error, invalid input: " << line << std::endl;
+					correctData = false;
+				}
 				if (ss.fail()) {
 					std::cout << "Error, invalid input: " << line << std::endl;
 					correctData = false;
@@ -148,7 +150,9 @@ public:
 	{
 		if (correctData == true)
 		{
-			CGenericAlgorithm algorithm(iItemsNumber, iValuesVector, iSizeVector);
+			printProblemDetails();
+			srand((unsigned int)time(NULL));
+			CGenericAlgorithm algorithm(iItemsNumber, iValuesVector, iSizeVector, iCapacity);
 			algorithm.solve();
 			algorithm.printBestSolution();
 		}
@@ -169,5 +173,15 @@ public:
 		}*/
 		
 	}
-};
 
+	void printProblemDetails()
+	{
+		std::cout << "Knapsack problem: \n";
+		std::cout << "Number of items: " << iItemsNumber << "\n";
+		std::cout << "Each item and its size: \n";
+		for (int i = 0; i < iValuesVector.size(); i++)
+		{
+			std::cout << iValuesVector[i] << " -> " << iSizeVector[i] << "\n";
+		}
+	}
+};

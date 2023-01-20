@@ -38,10 +38,21 @@
     <ClInclude Include="CIndividual.h">
       <Filter>Pliki źródłowe</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="dane.txt">
       <Filter>Pliki źródłowe</Filter>
     </Text>
+    <Text Include="dane2.txt">
+      <Filter>Pliki źródłowe</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="miniProject.rc">
+      <Filter>Pliki zasobów</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

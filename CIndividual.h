@@ -47,7 +47,6 @@ public:
 	}
 	void mutate(double mutProb)
 	{
-		//if(genotype != NULL)
 		for (int i = 0; i < iSize; i++)
 		{
 			double randNum = (double)rand() / (RAND_MAX + 1.0);
@@ -141,10 +140,6 @@ public:
 		}
 	}
 
-	/*CIndividual getCopy()
-	{
-		return *this;
-	}*/
 
 	CIndividual* copy()
 	{
@@ -154,16 +149,16 @@ public:
 		{
 			copyGen[i] = genotype[i];
 		}
-		copy->setQuality(iFitness);
+		copy->setFitness(iFitness);
 		return copy;
 	}
 
-	void setQuality(int fitness)
+	void setFitness(int fitness)
 	{
 		iFitness = fitness;
 	}
 
-	int getQuality()
+	int getFitness()
 	{
 		return iFitness;
 	}

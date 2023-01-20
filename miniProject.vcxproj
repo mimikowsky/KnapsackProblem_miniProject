@@ -136,9 +136,14 @@
     <ClInclude Include="CGenericAlgorithm.h" />
     <ClInclude Include="CIndividual.h" />
     <ClInclude Include="CKnapsackProblem.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="dane.txt" />
+    <Text Include="dane2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="miniProject.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
